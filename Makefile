@@ -6,6 +6,6 @@ build-passwords:
 		PYTHON=pypy3
 	fi
 	echo "python interpreter: $$PYTHON"
-	7z x pwned-passwords-sha1-ordered-by-hash-v7.7z -so |
-		$$PYTHON build.py > passwords-wip.bin
-	mv passwords-wip.bin passwords.bin
+	7z x pwned-passwords-sha1-ordered-by-hash-v7.7z -so | $$PYTHON build.py &&
+	mv passwords-wip.bin passwords.bin &&
+	mv index-wip.bin index.bin
