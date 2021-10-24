@@ -35,9 +35,7 @@ def write_index(prev_prefix, prefix, line, index, i):
     if prev_prefix != '' and int(prefix, 16) - int(prev_prefix, 16) != 1:
         raise Exception('unexpected gap in data')
 
-    postfix = '0' + line[5:40]
-    index.write(bytes.fromhex(postfix))
-    index.write(i.to_bytes(8, byteorder='little'))
+    index.write(i.to_bytes(4, byteorder='little'))
 
 
 with open('passwords-wip.bin', 'wb') as passwords, open('index-wip.bin', 'wb') as index:
