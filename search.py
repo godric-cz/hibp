@@ -4,9 +4,9 @@ import os
 
 
 class Search(object):
-    def __init__(self, index_fn, passwords_fn):
-        self.index = Index(index_fn)
-        self.passwords = Passwords(passwords_fn)
+    def __init__(self, index_filename, passwords_filename):
+        self.index = Index(index_filename)
+        self.passwords = Passwords(passwords_filename)
 
     def __enter__(self):
         self.passwords.__enter__()
@@ -22,6 +22,10 @@ class Search(object):
 
         chunk = Chunk(self.passwords, prefix, boundaries[0], boundaries[1])
         return chunk.search(hsh)
+
+    def list(self, prefix):
+        boundaries = self.index.get_boundaries(prefix)
+        return self.passwords.list(boundaries[0], boundaries[1])
 
 
 class Index(object):
@@ -100,6 +104,19 @@ class Passwords(object):
         occurences = item[hash_length]
 
         return (checksum, occurences)
+
+    def list(self, lo, hi):
+        hash_length = self.item_length - 1
+        self.f.seek(lo * self.item_length)
+        out = []
+
+        for _ in range(hi - lo + 1):
+            item = self.f.read(self.item_length)
+            prefix = item[:hash_length].hex()[5:].upper()
+            occurences = item[hash_length]
+            out.append(f'{prefix}:{occurences}\n')
+
+        return ''.join(out)
 
 
 class Reader(object):
