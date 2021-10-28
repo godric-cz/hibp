@@ -5,7 +5,7 @@ import os
 
 class Search(object):
     def __init__(self, index_filename, passwords_filename):
-        self.index = Index(index_filename)
+        self.index = Index(index_filename, os.path.getsize(passwords_filename) // 21 - 1)
         self.passwords = Passwords(passwords_filename)
 
     def __enter__(self):
@@ -29,7 +29,8 @@ class Search(object):
 
 
 class Index(object):
-    def __init__(self, filename):
+    def __init__(self, filename, max_hi):
+        self.max_hi = max_hi
         with open(filename, 'rb') as f:
             self.data = f.read()
 
@@ -48,6 +49,9 @@ class Index(object):
     def _get_item_no(self, prefix_int):
         """ Return item number of first item with given prefix. """
         i = prefix_int * 4
+        if i >= len(self.data):
+            return self.max_hi + 1
+
         return int.from_bytes(self.data[i:i+4], byteorder='little')
 
 
@@ -69,6 +73,10 @@ class Chunk(object):
     def search(self, key):
         i = interpolation_search(self, int(key, 16), self.lo - 1, self.hi + 1)
         if i == None:
+            return 0
+
+        # handle fake segment boundaries
+        if i == self.lo - 1 or i == self.hi + 1:
             return 0
 
         return self.passwords.get(i)[1]
