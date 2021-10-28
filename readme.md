@@ -28,7 +28,7 @@ Or you can explore the API in browser: http://127.0.0.1:8000/docs
 
 The webserver will handle few 100s requests per second, depending on system configuration. The search itself can handle more, especially if run in parallel.
 
-This table shows performance in lookups/s for single thread and peak parallel performance (number of parallel processes is in parenthesis).
+This table shows performance in lookups/s for single thread and peak parallel performance (number of parallel processes is in parentheses).
 
 |   | Single thread | Parallel |
 | --- | --- | --- |
